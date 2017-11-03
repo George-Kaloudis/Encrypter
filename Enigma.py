@@ -9,9 +9,9 @@ string = ""
 charNum = ["Α", "Β", "Γ", "Δ", "Ε", "Ζ", "Η", "Θ", "Ι", "Κ", "Λ", "Μ", "Ν", "Ξ", "Ο", "Π", "Ρ", "Σ", "Τ", "Υ", "Φ", "Χ", "Ψ", "Ω"]
 plugAlpha = ["Α", "Β", "Γ", "Δ", "Ε", "Ζ", "Η", "Θ", "Ι", "Κ", "Λ", "Μ", "Ν", "Ξ", "Ο", "Π", "Ρ", "Σ", "Τ", "Υ", "Φ", "Χ", "Ψ", "Ω"]
 charTable = { "Α" : 0, "Β" : 1, "Γ" : 2, "Δ" : 3, "Ε" : 4, "Ζ" : 5, "Η" : 6, "Θ" : 7, "Ι" : 8, "Κ" : 9, "Λ" : 10, "Μ" : 11, "Ν" : 12, "Ξ" : 13, "Ο" : 14, "Π" : 15, "Ρ" : 16, "Σ" : 17, "Τ" : 18, "Υ" : 19, "Φ" : 20, "Χ" : 21, "Ψ" : 22, "Ω" : 23}
-
+plugBoard = dict()
 reflector = ["Ε", "Κ", "Μ", "Ζ", "Λ", "Γ", "Δ", "Ζ", "Ι", "Β", "Λ", "Ε", "Κ", "Α" , "Η", "Μ", "Θ", "Δ", "Α", "Ι", "Β", "Η", "Γ",  "Θ"]
-
+plugs=0
 
 aAlpha = ["Ε", "Κ", "Μ", "Ζ", "Λ", "Ξ", "Δ", "Ψ", "Φ", "Ω", "Ν", "Τ", "Ο", "Υ" , "Η", "Χ", "Σ", "Π", "Α", "Ι", "Β", "Ρ", "Γ",  "Θ"]
 
@@ -33,10 +33,8 @@ class gear:
         self.realalpha = self.realalpha[-23:] + self.realalpha[:-23]
         
 		    
-
-
     def __str__(self):
-        return str(self.realalpha) #+ " " + str(self.realalpha)
+        return str(self.alphabet) + " " + str(self.realalpha)
 
 
     def set(self):
@@ -75,10 +73,6 @@ def encode(a, b, c, char):
     a.shift(b,c)
     return charNum[passRightAll(a, b, c, reflect(passLeftAll(a, b, c, char)))]
 				
-
-def plugBoardChangeLeft():
-    return 0
-
     
 A=gear("Π","Τ", aAlpha)
 
@@ -108,21 +102,35 @@ secondGear.set()
 thirdGear.set()
 
 while True:
-    for index, i in enumerate(plugAlpha):
-        print(index+1, ".", i, sep ="")
-    plugCharA = int(input("Εισηγαγε τον πρώτο χαρακτηρα:")) - 1
-    plugAlpha.remove(plugAlpha[plugCharA])
-    for index, i in enumerate(plugAlpha):
-        print(index+1, ".", i, sep ="")
-    plugCharB = int(input("Εισηγαγε τον δεύτερο χαρακτηρα:")) - 1
-    plugAlpha.remove(plugAlpha[plugCharB])
+    mode=input("Θές να προσθέσεις μια σύνδεση μεταξύ γραμμάτων στο PlugBoard?\n1.Ναί  |  2.Όχι\nΕπιλογή:")
+    if mode=="2":
+        break
+    elif mode=="1":
+        for index, i in enumerate(plugAlpha):
+            print(index+1, ".", i, sep ="")
+        plugCharA = int(input("Εισηγαγε τον πρώτο χαρακτηρα:")) - 1
+        firstc=plugAlpha[plugCharA]
+        plugAlpha.remove(plugAlpha[plugCharA])
+        for index, i in enumerate(plugAlpha):
+            print(index+1, ".", i, sep ="")
+        plugCharB = int(input("Εισηγαγε τον δεύτερο χαρακτηρα:")) - 1
+        secondc=plugAlpha[plugCharB]
+        plugAlpha.remove(plugAlpha[plugCharB])
+        plugBoard[firstc] = secondc
+        plugBoard[secondc] = firstc
+        plugs+=1
+    if plugs==6:
+        print("You have the max amount of plugs on the PlugBoard!!")
+        break
+for i in plugAlpha:
+    plugBoard[i]=i
 
-#Make dic, code to add both to dic if to stop loop and coninue stop at 6
+
 string = input("Εισήγαγε το κείμενο που θα κωδικοποιήσει το πρόγραμμα σε μορφή ΧΩΡΙΣ ΣΗΜΕΙΑ ΣΤΙΞΗΣ:\n").upper()
 
 for i in string:
     if i!=" ":
-        message += encode(firstGear,secondGear,thirdGear, i)
+        message += plugBoard[encode(firstGear,secondGear,thirdGear, plugBoard[i])]
     else:
         message += " "
 
